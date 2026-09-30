@@ -2,4 +2,16 @@ ECE 366 Progress Report 1
 
 
 1a)
+module one_bit_full_adder(A, B, Cin, S, Cout);
+
+input A, B, Cin;
+output S, Cout;
+
+reg S, Cout;
+
+always @(*) begin
+    {Cout, S} = A + B + Cin;
+end
+
+endmodule
 
