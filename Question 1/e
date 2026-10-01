@@ -1,1 +1,32 @@
 // ECE 366 Progress report 1e
+
+// Problem 1(e): testbench for the 4-bit RCA/RCS
+// Cin = 0 -> add, Cin = 1 -> subtract. Each case is held for 10 ns.
+`timescale 1ns/1ps
+module tb_four_bit_RCA_RCS;
+
+reg  [3:0] A, B;
+reg        Cin;
+wire [3:0] S;
+wire       Cout;
+
+four_bit_RCA_RCS dut (.A(A), .B(B), .Cin(Cin), .S(S), .Cout(Cout));
+
+integer errors = 0;
+
+task run(input [3:0] a, input [3:0] b, input sub, input [8*40-1:0] name);
+    reg [3:0] bm;
+    reg [4:0] exp;
+    begin
+        A = a; B = b; Cin = sub;
+        #10;
+        bm  = sub ? ~b : b;                        // keep the inversion 4 bits wide
+        exp = a + bm + sub;                        // reference model: {Cout, S}
+        $display("%-38s A=%b B=%b Cin=%b | S=%b Cout=%b | unsigned %2d %s %2d = %2d | signed %2d %s %2d = %2d  %s",
+                 name, A, B, Cin, S, Cout,
+                 A, sub ? "-" : "+", B, S,
+                 $signed(A), sub ? "-" : "+", $signed(B), $signed(S),
+                 ({Cout, S} === exp) ? "PASS" : "FAIL");
+        if ({Cout, S} !== exp) errors = errors + 1;
+    end
+endtask
