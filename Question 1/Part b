@@ -1,0 +1,16 @@
+// ECE 366 Progress report 1b
+
+module one_bit_full_adder(A, B, Cin, S, Cout);
+
+input A, B, Cin;
+output S, Cout;
+
+wire p, g, t;
+
+xor x1 (p, A, B);        
+xor x2 (S, p, Cin);      
+and a1 (g, A, B);       
+and a2 (t, p, Cin);      
+or  o1 (Cout, g, t);     
+
+endmodule
