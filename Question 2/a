@@ -1,1 +1,34 @@
+//2a
+
+module cla_block(A, B, Cin, S, Cout);
+input  [3:0] A, B;
+input  Cin;
+output [3:0] S;
+output Cout;
+
+wire [3:0] g, p;
+wire t1, t2, t3, t4, t5, G, P01, P23, P, PC;
+
+
+and ga[3:0] (g, A, B);
+or  pa[3:0] (p, A, B);
+and (t1, p[1], g[0]);   
+or (t2, g[1], t1);
+and (t3, p[2], t2);     
+or (t4, g[2], t3);
+and (t5, p[3], t4);     
+or (G,  g[3], t5);
+
+and (P01, p[0], p[1]);
+and (P23, p[2], p[3]);
+and (P,   P01,  P23);
+
+and (PC, P, Cin);
+or  (Cout, G, PC);
+
+four_bit_RCA_RCS rca (A, B, Cin, S, );
+
+endmodule
+
+
 
