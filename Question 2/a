@@ -1,4 +1,4 @@
-//2a
+// ECE 366 Question 2a
 
 module cla_block(A, B, Cin, S, Cout);
 input  [3:0] A, B;
@@ -28,7 +28,23 @@ or  (Cout, G, PC);
 
 four_bit_RCA_RCS rca (A, B, Cin, S, );
 
+// 32 bit CLA 
+
+module CLA(A, B, Cin, S, Cout);
+input  [31:0] A, B;
+input  Cin;
+output [31:0] S;
+output Cout;
+
+wire [8:0] c;            
+assign c[0] = Cin;
+
+genvar i;
+generate
+    for (i = 0; i < 8; i = i + 1) begin : blk
+        cla_block b (A[4i+3:4i], B[4i+3:4i], c[i], S[4i+3:4i], c[i+1]);
+    end
+endgenerate
+
+assign Cout = c[8];
 endmodule
-
-
-
