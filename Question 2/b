@@ -1,1 +1,21 @@
+// ECE 366 2b
 
+module tb_CLA;
+
+reg  [31:0] A, B;
+reg         Cin;
+wire [31:0] S;
+wire        Cout;
+wire signed [31:0] S_signed = S;   // same bits as S, printed as two's complement
+
+CLA dut (A, B, Cin, S, Cout);
+
+initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars(0, tb_CLA);
+    $monitor("A=%h B=%h Cin=%b -> S=%h Cout=%b | unsigned %0d, signed %0d",
+             A, B, Cin, S, Cout, S, S_signed);
+
+
+
+end module
