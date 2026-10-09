@@ -16,6 +16,15 @@ initial begin
     $monitor("A=%h B=%h Cin=%b -> S=%h Cout=%b | unsigned %0d, signed %0d",
              A, B, Cin, S, Cout, S, S_signed);
 
+    // Tests 
+    A=32'd10; B=32'd5; Cin = 0; #10;    //unsigned add
+    A=32'hFFFFFFFF; B=32'd1; Cin = 0; #10; //carryout
+    A=-32'sd10; B=32'd5; Cin = 0; #10; //signed add
+    A=32'h0000FFFF; B=32'h00000001; Cin = 0; #10; //carry propagation across 4bit blocks
+    A=32'd10; B=32'd5; Cin = 1; #10; //Cin =1
+    A=32'd25; B=32'd15; Cin = 0; #10; //unsigned add
+    
+    
 
 
 end module
