@@ -14,33 +14,100 @@ genvar i;
 
 //for loop
 generate
-  for(i=0;i<16;i+=1) begin
+  for(i=0;i<16;i=i+1) begin
     or (P[i], A[i], B[i]);
     and (G[i], A[i], B[i]);
   end
 endgenerate
 
 //prefix computation block
+wire [15:0] P0,G0;
 wire [15:0] P1,G1;
 wire [15:0] P2,G2;
 wire [15:0] P3,G3;
 wire [15:0] P4,G4;
 
 genvar j;
+assign P0[0] = 1'b0;
+assign G0[0] = Cin;
+
 generate
-  for(j=0;j<16;j+=1) begin
-    if(j % 2 == 1) begin
+  for(j=1;j<16;j=j+1) begin
+    assign P0[j] = P[j-1];
+    assign G0[j] = G[j-1];
+  end
+endgenerate
+
+generate
+  for(j=0;j<16;j=j+1) begin
+    if(j%2==1) begin
       wire temp;
-      and (P1[j], P[j],P[j-1]);
-      and (temp, P[j],G[j-1]);
-      or (G1[j], G[j],temp);
+      and (P1[j], P0[j],P0[j-1]);
+      and (temp, P0[j],G0[j-1]);
+      or(G1[j], G0[j] ,temp);
     end
     else begin
-      assign P1[j] = P[j];
-      assign G1[j] = G[j];
+      assign P1[j] = P0[j];
+      assign G1[j] = G0[j];
     end
   end
 endgenerate
+
+generate
+  for (j=0;j<16;j=j+1) begin
+    if(j%4 >=2) begin
+      wire temp;
+      and (P2[j], P1[j], P1[(j/4)*4+1]);
+      and (temp, P1[j], G1[(j/4)*4+1]);
+      or (G2[j], G1[j], temp);
+    end
+    else begin
+      assign P2[j] = P1[j];
+      assign G2[j] = G1[j];
+    end
+  end
+endgenerate
+
+generate
+  for(j=0;j<16;j=j+1) begin
+    if(j%8 >=4) begin
+      wire temp;
+      and (P3[j], P2[j], P2[(j/8)*8+3]);
+      and (temp, P2[j], G2[(j/8)*8+3]);
+      or (G3[j], G2[j], temp);
+    end
+    else begin
+      assign P3[j] = P2[j];
+      assign G3[j] = G2[j];
+    end
+  end
+endgenerate
+
+generate
+  for(j=0;j<16;j=j+1) begin
+    if(j>=8)begin
+      wire temp;
+      and (P4[j], P3[j], P3[7]);
+      and (temp, P3[j], G3[7]);
+      or (G4[j], G3[j], temp);
+    end
+    else begin
+      assign P4[j] = P3[j];
+      assign G4[j] = G3[j];
+    end
+  end
+endgenerate
+
+//compute
+generate
+  for(i=0; i<16; i=i+1) begin
+    xor (S[i], A[i], B[i], G4[i]);
+  end
+endgenerate
+
+wire temp;
+and( temp,P[15], G4[15]);
+or (Cout, G[15], temp);
 
 
 endmodule
