@@ -20,5 +20,27 @@ generate
   end
 endgenerate
 
+//prefix computation block
+wire [15:0] P1,G1;
+wire [15:0] P2,G2;
+wire [15:0] P3,G3;
+wire [15:0] P4,G4;
+
+genvar j;
+generate
+  for(j=0;j<16;j+=1) begin
+    if(j % 2 == 1) begin
+      wire temp;
+      and (P1[j], P[j],P[j-1]);
+      and (temp, P[j],G[j-1]);
+      or (G1[j], G[j],temp);
+    end
+    else begin
+      assign P1[j] = P[j];
+      assign G1[j] = G[j];
+    end
+  end
+endgenerate
+
 
 endmodule
