@@ -28,6 +28,8 @@ or  (Cout, G, PC);
 
 four_bit_RCA_RCS rca (A, B, Cin, S, );
 
+endmodule
+
 // 32 bit CLA 
 
 module CLA(A, B, Cin, S, Cout);
@@ -42,7 +44,7 @@ assign c[0] = Cin;
 genvar i;
 generate
     for (i = 0; i < 8; i = i + 1) begin : blk
-        cla_block b (A[4i+3:4i], B[4i+3:4i], c[i], S[4i+3:4i], c[i+1]);
+        cla_block b (A[4*i+3:4*i], B[4*i+3:4*i], c[i], S[4*i+3:4*i], c[i+1]);
     end
 endgenerate
 
