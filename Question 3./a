@@ -1,3 +1,5 @@
+//366 problem 3a
+
 // 16-bit PPA
 `timescale 1ns/1ps
 module PPA(A,B,Cin,S,Cout);
