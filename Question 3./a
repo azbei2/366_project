@@ -7,6 +7,18 @@ input Cin;
 output[15:0] S;
 output Cout;
 
+//propagation and generation logic
+wire[15:0] P,G;
+
+genvar i;
+
+//for loop
+generate
+  for(i=0;i<16;i+=1) begin
+    or (P[i], A[i], B[i]);
+    and (G[i], A[i], B[i]);
+  end
+endgenerate
 
 
 endmodule
