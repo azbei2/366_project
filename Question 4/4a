@@ -1,1 +1,68 @@
+4a)
+`timescale 1ns/1ps
 
+//blackcell
+module black_cell(Pik, Gik, Pkj, Gkj, Pij, Gij);
+input  Pik, Gik, Pkj, Gkj;
+output Pij, Gij;
+wire t;
+and (Pij, Pik, Pkj);
+and (t,   Pik, Gkj);
+or  (Gij, Gik, t);
+endmodule
+
+//graycell
+module gray_cell(Pik, Gik, Gkj, Gij);
+input  Pik, Gik, Gkj;
+output Gij;
+wire t;
+and (t,   Pik, Gkj);
+or  (Gij, Gik, t);
+endmodule
+
+
+// 16bit Koggestone adder
+module KS(A, B, Cin, S, Cout);
+
+input  [15:0] A, B;
+input  Cin;
+output [15:0] S;
+output Cout;
+
+//pre computation
+wire [15:0] p, g;
+xor pre_p[15:0] (p, A, B);
+and pre_g[15:0] (g, A, B);
+
+  // G[16*l + n] and P[16*l + n] 
+wire [79:0] G, P;
+assign G[15:0] = {g[14:0], Cin};    // G_-1:-1
+assign P[15:0] = {p[14:0], 1'b0};   // P_-1:-1
+
+genvar l, n;
+generate
+    for (l = 0; l < 4; l = l + 1) begin : level
+        for (n = 0; n < 16; n = n + 1) begin : col
+            if (n < (1 << l)) begin : buffer
+                assign G[16*(l+1)+n] = G[16*l+n];
+                assign P[16*(l+1)+n] = P[16*l+n];
+            end
+            else if (n < (2 << l)) begin : gray
+                gray_cell gc (P[16*l+n], G[16*l+n], G[16*l+n-(1<<l)], G[16*(l+1)+n]);
+                assign P[16*(l+1)+n] = 1'b0;
+            end
+            else begin : black
+              black_cell bc (P[16*l+n], G[16*l+n], P[16*l+n-(1<<l)], G[16*l+n-(1<<l)], P[16*(l+1)+n], G[16*(l+1)+n]);
+            end
+        end
+    end
+endgenerate
+
+
+//carry out
+gray_cell gout (p[15], g[15], G[79], Cout);
+
+//post computation
+xor post_s[15:0] (S, G[79:64], p);
+
+endmodule
