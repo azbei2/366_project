@@ -1,0 +1,31 @@
+// Problem 3b
+
+`timescale 1ns/1ps
+module tb_PPA;
+
+reg  [15:0] A, B;
+reg         Cin;
+wire [15:0] S;
+wire        Cout;
+wire signed [15:0] S_signed = S;
+
+PPA dut (A, B, Cin, S, Cout);
+
+initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars(0, tb_PPA);
+    $monitor("A=%h B=%h Cin=%b -> S=%h Cout=%b | unsigned %0d, signed %0d",
+             A, B, Cin, S, Cout, S, S_signed);
+             
+ // subtraction is done as A + ~B + 1  (invert B, set Cin = 1)
+    A = 16'd1000;   B = 16'd234;      Cin = 0; #10; 
+    A = 16'd1000;   B = ~16'd234;     Cin = 1; #10;
+    A = 16'd50;     B = -16'd80;      Cin = 0; #10;
+    A = 16'd20;     B = ~(-16'd15);   Cin = 1; #10;
+    A = 16'hFFFF;   B = 16'd1;        Cin = 0; #10; 
+    A = 16'h00FF;   B = 16'd1;        Cin = 0; #10;
+    $finish;
+             end
+
+endmodule
+
